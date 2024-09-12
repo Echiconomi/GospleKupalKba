@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
+      padding: 50px;
+    }
+    h1 {
+      color: #b19cd9;
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #fff;
+      padding: 10px;
+    }
+    th {
+      background-color: #b19cd9;
+    }
+  </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUUabZ_pDb0C1dezzuyBVzP6Ut7XpWo0s",
+      authDomain: "form-e74ab.firebaseapp.com",
+      databaseURL: "https://form-e74ab-default-rtdb.firebaseio.com",
+      projectId: "form-e74ab",
+      storageBucket: "form-e74ab.appspot.com",
+      messagingSenderId: "93811294360",
+      appId: "1:93811294360:web:6bfcd40b7a4fe2524cd0ed",
+      measurementId: "G-GV55PBD71V"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function fetchData() {
+      const tableBody = document.getElementById('table-body');
+      db.ref('tracked_users').once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          const data = childSnapshot.val();
+          const row = `
+            <tr>
+              <td>${data.ip}</td>
+              <td>${data.city}</td>
+              <td>${data.region}</td>
+              <td>${data.country}</td>
+              <td>${data.timestamp}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      });
+    }
+  </script>
+</head>
+<body onload="fetchData()">
+  <h1>Admin Panel</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>IP Address</th>
+        <th>City</th>
+        <th>Region</th>
+        <th>Country</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</body>
+</html>
