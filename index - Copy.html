@@ -1,84 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #1e1e1e;
-      color: #fff;
-      padding: 50px;
-    }
-    h1 {
-      color: #b19cd9;
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    table, th, td {
-      border: 1px solid #fff;
-      padding: 10px;
-    }
-    th {
-      background-color: #b19cd9;
-    }
-  </style>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCUUabZ_pDb0C1dezzuyBVzP6Ut7XpWo0s",
-      authDomain: "form-e74ab.firebaseapp.com",
-      databaseURL: "https://form-e74ab-default-rtdb.firebaseio.com",
-      projectId: "form-e74ab",
-      storageBucket: "form-e74ab.appspot.com",
-      messagingSenderId: "93811294360",
-      appId: "1:93811294360:web:6bfcd40b7a4fe2524cd0ed",
-      measurementId: "G-GV55PBD71V"
-    };
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TANGA</title>
+    <style>
+        /* Import creepy font */
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+        body {
+            font-family: 'Creepster', cursive;
+            margin: 0;
+            padding: 0;
+            background-color: #3a003c;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            animation: darkenBackground 4s infinite alternate;
+        }
 
-    function fetchData() {
-      const tableBody = document.getElementById('table-body');
-      db.ref('tracked_users').once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-          const data = childSnapshot.val();
-          const row = `
-            <tr>
-              <td>${data.ip}</td>
-              <td>${data.city}</td>
-              <td>${data.region}</td>
-              <td>${data.country}</td>
-              <td>${data.timestamp}</td>
-            </tr>
-          `;
-          tableBody.innerHTML += row;
-        });
-      });
-    }
-  </script>
+        /* Background animation */
+        @keyframes darkenBackground {
+            0% {
+                background-color: #3a003c;
+            }
+            100% {
+                background-color: #2b001e;
+            }
+        }
+
+        /* Flashing red and purple background */
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.1);
+            opacity: 0;
+            animation: flashEffect 1s infinite alternate;
+            z-index: -2;
+        }
+
+        @keyframes flashEffect {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Message styling */
+        .message {
+            background-color: rgba(150, 0, 0, 0.8);
+            color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            font-size: 36px;
+            text-align: center;
+            animation: spookyGlow 1.5s infinite alternate, pulseMessage 2s infinite;
+            transform: rotate(-5deg);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.7), 0 0 60px rgba(255, 0, 0, 0.9);
+        }
+
+        /* Glowing animation */
+        @keyframes spookyGlow {
+            0% {
+                text-shadow: 0 0 20px #ff0000, 0 0 30px #ff0000, 0 0 50px #ff0000;
+                transform: rotate(-5deg);
+            }
+            100% {
+                text-shadow: 0 0 40px #ff0000, 0 0 60px #ff0000, 0 0 80px #ff0000;
+                transform: rotate(5deg);
+            }
+        }
+
+        /* Pulse effect for the message */
+        @keyframes pulseMessage {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Description styling */
+        .description {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ff0000;
+            padding: 20px;
+            font-size: 24px;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 10px;
+            width: 60%;
+            font-family: 'Creepster', cursive;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+            transform: rotate(5deg);
+        }
+
+        /* Jumpscare effect */
+        @keyframes jumpscare {
+            0% {
+                transform: scale(1);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Sound effect (screaming) */
+        .background-sound {
+            display: none;
+        }
+
+        /* Fog effect */
+        .fog {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/fog.png');
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
 </head>
-<body onload="fetchData()">
-  <h1>Admin Panel</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>IP Address</th>
-        <th>City</th>
-        <th>Region</th>
-        <th>Country</th>
-        <th>Timestamp</th>
-      </tr>
-    </thead>
-    <tbody id="table-body"></tbody>
-  </table>
+<body>
+    <audio class="background-sound" autoplay loop>
+        <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
+    </audio>
+
+    <div class="fog"></div>
+    <div class="flash"></div>
+
+    <div class="message" onclick="triggerJumpscare()">
+        Rk Fuvk this website down.
+    </div>
+
+    <div class="description">
+        A website created by RK should not be used by traitors. Awoon.
+    </div>
+
+    <script>
+        // Trigger a jumpscare effect with a scream sound
+        function triggerJumpscare() {
+            // Flash the screen with a jump-scare animation
+            document.body.style.animation = "none";  // Stop the background animation
+            document.querySelector(".flash").style.animation = "flashEffect 0.1s infinite";
+            document.querySelector(".message").style.animation = "jumpscare 1s ease-out forwards";
+            document.querySelector(".message").style.fontSize = "72px";  // Increase message size
+
+            // Play a scream sound
+            var screamAudio = new Audio('https://www.soundjay.com/button/beep-07.wav');  // Replace with a scream sound URL
+            screamAudio.play();
+        }
+    </script>
 </body>
 </html>
